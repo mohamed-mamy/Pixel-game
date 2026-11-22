@@ -1,0 +1,141 @@
+/* ==========================================================================
+   Ocean MD — Animations pixelisées par paliers (steps() uniquement)
+   Variables CSS uniquement, zéro hex littéral, zéro propriété fluide.
+   ========================================================================== */
+
+@keyframes organ-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow:
+      0 0 0 2px var(--color-amber),
+      0 0 10px var(--glow-green);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.16);
+    box-shadow:
+      0 0 0 3px var(--color-phosphor-green),
+      0 0 20px var(--glow-green-strong);
+  }
+}
+
+@keyframes pixel-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px var(--glow-coral));
+  }
+  25% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 10px var(--glow-coral-strong));
+  }
+  50% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px var(--glow-coral));
+  }
+  75% {
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 8px var(--color-coral-red));
+  }
+}
+
+/* Clignotement sécuritaire (< 2Hz : 1 cycle / 0.6s) */
+@keyframes pixel-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 12px var(--glow-green);
+  }
+  50% {
+    opacity: 0.45;
+    box-shadow: 0 0 2px var(--glow-cyan);
+  }
+}
+
+@keyframes pixel-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+@keyframes page-flip {
+  0% {
+    transform: scaleX(0.88) translateY(-2px);
+    border-color: var(--color-amber);
+  }
+  50% {
+    transform: scaleX(0.96) translateY(0);
+    border-color: var(--color-phosphor-green);
+  }
+  100% {
+    transform: scaleX(1) translateY(0);
+    border-color: var(--color-cyan);
+  }
+}
+
+@keyframes ocean-restore {
+  0% {
+    filter: grayscale(100%) brightness(0.75);
+  }
+  100% {
+    filter: grayscale(0%) brightness(1);
+  }
+}
+
+/* Pulsation exclusive de l'organe actif sur la carte Hub */
+.organ-node[data-state="active"] {
+  animation: organ-pulse 0.8s steps(2, end) infinite;
+}
+
+/* Cœur d'équilibre du HUD en Rouge Corail */
+#hud-heart-icon.anim-heartbeat-pulse {
+  animation: pixel-heartbeat 0.56s steps(4, end) 1;
+}
+
+.anim-flicker {
+  animation: pixel-flicker 0.6s steps(2, end) 2;
+}
+
+.anim-shake {
+  animation: pixel-shake 0.24s steps(4, end) 1;
+}
+
+.anim-page-flip {
+  animation: page-flip 0.28s steps(4, end) 1;
+}
+
+/* Rétablissement progressif gris -> récif vif sur l'écran de fin */
+.ending-ocean[data-recovered="true"] {
+  animation: ocean-restore 1.8s steps(6, end) 1 forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .organ-node[data-state="active"],
+  #hud-heart-icon.anim-heartbeat-pulse,
+  .anim-flicker,
+  .anim-shake,
+  .anim-page-flip,
+  .ending-ocean[data-recovered="true"] {
+    animation: none;
+  }
+
+  .organ-node[data-state="active"] {
+    box-shadow:
+      0 0 0 3px var(--color-phosphor-green),
+      0 0 16px var(--glow-green-strong);
+  }
+
+  .ending-ocean[data-recovered="true"] {
+    filter: grayscale(0%) brightness(1);
+  }
+}

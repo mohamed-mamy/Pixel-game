@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Ocean MD — Système de design rétro 8-bit (Grille 8px, hors ligne, bilingue)
+   ========================================================================== */
+
+:root {
+  /* Palette de référence & alias rétrocompatibles */
+  --color-deep-blue: #0B1220;
+  --color-night-blue: #0B1220;
+  --color-title-bg: #0B1220;
+  --color-surface: #101B2E;
+  --color-surface-elevated: #16253E;
+  --color-surface-deep: #060B14;
+
+  --color-phosphor-green: #39FF14;
+  --color-sky-blue: #00E5FF;
+  --color-cyan: #00E5FF;
+  --color-warning-yellow: #FFB000;
+  --color-amber: #FFB000;
+  --color-coral-red: #FF3B3B;
+  --color-off-white: #E6F1FF;
+
+  /* Gris désactivé réservé aux bordures/fonds (texte désactivé AA via --color-disabled-text) */
+  --color-disabled-gray: #3A4A5E;
+  --color-disabled-text: #94ACC6;
+
+  /* Jetons carnet parchemin & profondeurs océaniques */
+  --color-parchment: #EFE4C6;
+  --color-parchment-edge: #D4C196;
+  --color-parchment-ink: #0B1220;
+  --color-ocean-mid: #0E3B5C;
+  --color-ocean-bright: #166088;
+
+  /* Lueurs & teintes alpha */
+  --glow-green: rgba(57, 255, 20, 0.32);
+  --tint-green: rgba(57, 255, 20, 0.12);
+  --glow-cyan: rgba(0, 229, 255, 0.32);
+  --tint-cyan: rgba(0, 229, 255, 0.12);
+  --glow-amber: rgba(255, 176, 0, 0.32);
+  --tint-amber: rgba(255, 176, 0, 0.14);
+  --glow-coral: rgba(255, 59, 59, 0.32);
+  --tint-coral: rgba(255, 59, 59, 0.14);
+  --glow-green-strong: rgba(57, 255, 20, 0.58);
+  --glow-cyan-strong: rgba(0, 229, 255, 0.58);
+  --glow-amber-strong: rgba(255, 176, 0, 0.58);
+  --glow-coral-strong: rgba(255, 59, 59, 0.58);
+  --tint-parchment-rule: rgba(11, 18, 32, 0.09);
+  --tint-parchment-shade: rgba(11, 18, 32, 0.14);
+  --shadow-pixel-depth: rgba(6, 11, 20, 0.85);
+
+  /* Piles typographiques 100 % hors ligne (zéro URL externe) */
+  --font-display: 'Press Start 2P', 'Silkscreen', 'Courier New', monospace;
+  --font-dialogue: 'VT323', 'Courier New', monospace;
+  --font-body: 'Cairo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Échelle fluide calibrée pour 320px, 360px et 480px+ */
+  --font-size-title: clamp(1.375rem, 6.8vw, 2.25rem);
+  --font-size-heading: clamp(0.875rem, 3.6vw, 1.125rem);
+  --font-size-body: clamp(0.8125rem, 3.4vw, 0.9375rem);
+  --font-size-dialogue: clamp(0.9375rem, 4vw, 1.1875rem);
+  --font-size-hud: clamp(0.625rem, 2.4vw, 0.75rem);
+  --font-size-micro: clamp(0.6875rem, 2.2vw, 0.75rem);
+
+  /* Échelle d'espacement grille 8px */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  /* Géométrie carrée pixel & cibles tactiles */
+  --radius-none: 0;
+  --border-pixel: 2px;
+  --border-strong: 3px;
+  --border-bezel: 4px;
+  --touch-min: 44px;
+  --touch-btn: 48px;
+  --choice-min: 88px;
+
+  /* Empilement & paliers temporels */
+  --z-base: 1;
+  --z-nodes: 10;
+  --z-hud: 20;
+  --z-scanlines: 50;
+  --step-fast: 120ms;
+  --step-normal: 240ms;
+  --step-slow: 480ms;
+}
+
+/* Support arabe & RTL (bilingue hors ligne) */
+:root[lang="ar"],
+[dir="rtl"] {
+  --font-display: 'Cairo', 'Handjet', 'IBM Plex Sans Arabic', sans-serif;
+  --font-dialogue: 'Cairo', 'Handjet', 'IBM Plex Sans Arabic', sans-serif;
+  --font-body: 'Cairo', 'Handjet', 'IBM Plex Sans Arabic', sans-serif;
+}

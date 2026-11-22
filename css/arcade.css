@@ -1,0 +1,263 @@
+/* ==========================================================================
+   Ocean MD — Châssis console portable néon & barre d'état HUD
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background-color: var(--color-surface-deep);
+  background-image: radial-gradient(
+    circle at 50% 25%,
+    var(--color-deep-blue) 0%,
+    var(--color-surface-deep) 78%
+  );
+  color: var(--color-off-white);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  line-height: 1.45;
+  -webkit-font-smoothing: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Châssis console centré (max 480px sur bureau, plein écran fluide mobile) */
+.arcade-bezel {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-deep-blue);
+  border: var(--border-bezel) solid var(--color-phosphor-green);
+  box-shadow:
+    inset 0 0 0 2px var(--color-deep-blue),
+    inset 0 0 0 4px var(--color-cyan),
+    inset 0 0 16px var(--tint-cyan),
+    0 0 14px var(--glow-green),
+    0 0 32px var(--tint-green);
+}
+
+/* Barre d'état HUD compacte & logique LTR/RTL */
+.arcade-hud {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-hud);
+  width: 100%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block: var(--space-1);
+  padding-inline: var(--space-2);
+  background-color: var(--color-surface);
+  border: var(--border-pixel) solid var(--color-cyan);
+  box-shadow:
+    0 4px 0 0 var(--color-surface-deep),
+    0 0 12px var(--glow-cyan),
+    inset 0 0 10px var(--tint-cyan);
+  text-align: start;
+}
+
+.hud-stats {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-hud);
+}
+
+.hud-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+
+.hud-label {
+  color: var(--color-off-white);
+  font-size: var(--font-size-micro);
+  font-weight: 700;
+}
+
+#hud-score,
+.hud-value {
+  font-family: var(--font-display);
+  font-size: var(--font-size-hud);
+  color: var(--color-cyan);
+  text-shadow: 0 0 8px var(--glow-cyan);
+}
+
+#hud-balance,
+.hud-value[data-hud="balance"] {
+  color: var(--color-phosphor-green);
+  text-shadow: 0 0 8px var(--glow-green);
+}
+
+#hud-balance[data-balance-state="low"],
+.hud-value[data-balance-state="low"] {
+  color: var(--color-amber);
+  text-shadow: 0 0 8px var(--glow-amber);
+}
+
+#hud-heart-icon,
+.hud-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-coral-red);
+  filter: drop-shadow(0 0 6px var(--glow-coral-strong));
+}
+
+.hud-icon svg,
+.mute-icon svg {
+  display: block;
+}
+
+/* Bouton son permanent (vert actif / ardoise + ambre si coupé) */
+#btn-mute {
+  flex-shrink: 0;
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
+  padding-block: var(--space-1);
+  padding-inline: var(--space-2);
+  gap: var(--space-1);
+  font-size: var(--font-size-hud);
+  white-space: nowrap;
+  background-color: var(--color-night-blue);
+  background-image: linear-gradient(var(--tint-green), var(--tint-green));
+  border: var(--border-pixel) solid var(--color-phosphor-green);
+  color: var(--color-phosphor-green);
+  box-shadow:
+    0 3px 0 0 var(--color-surface-deep),
+    0 0 10px var(--glow-green),
+    inset 0 0 8px var(--tint-green);
+}
+
+#btn-mute:hover:not(:disabled),
+#btn-mute:focus-visible:not(:disabled) {
+  background-image: linear-gradient(var(--tint-cyan), var(--tint-cyan));
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+  box-shadow:
+    0 3px 0 0 var(--color-surface-deep),
+    0 0 16px var(--glow-cyan-strong),
+    inset 0 0 12px var(--tint-cyan);
+}
+
+#btn-mute:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  background-image: linear-gradient(var(--tint-amber), var(--tint-amber));
+  border-color: var(--color-amber);
+  color: var(--color-amber);
+  box-shadow:
+    0 1px 0 0 var(--color-surface-deep),
+    0 0 14px var(--glow-amber-strong);
+}
+
+#btn-mute[aria-pressed="true"] {
+  background-color: var(--color-surface);
+  background-image: linear-gradient(var(--tint-amber), var(--tint-amber));
+  border-color: var(--color-disabled-gray);
+  color: var(--color-amber);
+  box-shadow:
+    0 3px 0 0 var(--color-surface-deep),
+    inset 0 0 0 1px var(--color-amber);
+}
+
+#btn-mute[aria-pressed="true"]:hover:not(:disabled),
+#btn-mute[aria-pressed="true"]:focus-visible:not(:disabled) {
+  border-color: var(--color-amber);
+  color: var(--color-amber);
+  box-shadow:
+    0 3px 0 0 var(--color-surface-deep),
+    0 0 14px var(--glow-amber-strong);
+}
+
+/* Scène intérieure des écrans */
+.arcade-screen {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--space-1);
+  padding-block: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-base);
+}
+
+/* Scanlines CRT discrètes (désactivées si contraste élevé demandé) */
+.arcade-screen::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-scanlines);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--color-surface-deep) 2px,
+    var(--color-surface-deep) 4px
+  );
+  opacity: 0.16;
+}
+
+@media (prefers-contrast: more) {
+  .arcade-screen::after {
+    display: none;
+  }
+}
+
+:root[lang="ar"] body,
+[dir="rtl"] body {
+  line-height: 1.55;
+}
+
+@media (min-width: 400px) {
+  .hud-stats {
+    gap: var(--space-3);
+  }
+  .arcade-screen {
+    padding-inline: var(--space-2);
+  }
+}
+
+@media (min-width: 520px) {
+  .arcade-bezel {
+    padding: var(--space-3);
+  }
+  .arcade-hud {
+    padding-block: var(--space-2);
+    padding-inline: var(--space-2);
+  }
+}

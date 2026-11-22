@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "story": {
+    "introLines": [
+      "L'océan est malade.",
+      "Les symptômes touchent chaque organe.",
+      "Vous êtes le dernier médecin."
+    ],
+    "endingRevealLines": [
+      "L'océan est un corps vivant, pas un réservoir.",
+      "Chaque mal soigné est né d'un choix humain.",
+      "Sa guérison commence aussi par un choix humain."
+    ],
+    "pledgeQuestion": "Vous engagez-vous à le préserver ?"
+  },
+  "stages": [
+    {
+      "id": "lungs",
+      "order": 1,
+      "organNameAr": "Les Poumons",
+      "organEquivalent": "Le phytoplancton de surface",
+      "iconKey": "organ-lungs",
+      "symptomLines": [
+        "Le phytoplancton manque d'air en surface.",
+        "Un voile d'algues trouble les eaux claires.",
+        "Le taux d'oxygène marin chute vite."
+      ],
+      "delayedSymptom": null,
+      "choices": [
+        {
+          "id": "clean_surface",
+          "text": "Nettoyer la surface de l'eau",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "La surface nettoyée laisse passer la lumière.",
+            "Le phytoplancton respire et produit l'oxygène."
+          ]
+        },
+        {
+          "id": "leave_algae",
+          "text": "Laisser les algues s'étendre",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Le voile d'algues bloque encore la lumière.",
+            "Sans rayons solaires, le plancton asphyxie."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Le phytoplancton crée l'oxygène grâce au soleil.",
+          "Tout écran en surface bloque la lumière vitale."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Comme nos poumons, la mer respire via sa surface.",
+          "L'excès d'algues prive les micro-plantes de soleil."
+        ]
+      },
+      "notebookLine": "Note 1 : L'oxygène revient. Pourquoi ce pouls faible ?"
+    },
+    {
+      "id": "heart",
+      "order": 2,
+      "organNameAr": "Le Cœur",
+      "organEquivalent": "Les courants océaniques",
+      "iconKey": "organ-heart",
+      "symptomLines": [
+        "Le pouls des courants marins s'affaiblit.",
+        "La chaleur ne circule plus entre les eaux.",
+        "Des zones glacent pendant que d'autres brûlent."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "lungs",
+        "warningText": "Symptôme différé : manque d'oxygène, cœur ralenti."
+      },
+      "choices": [
+        {
+          "id": "natural_current",
+          "text": "Rétablir le cours naturel du courant",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "Le courant libéré répartit la chaleur marine.",
+            "L'équilibre naturel stabilise le cœur océanique."
+          ]
+        },
+        {
+          "id": "artificial_barrier",
+          "text": "Construire une barrière artificielle",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Le mur rigide dévie le flux et bloque le cycle.",
+            "Forcer l'eau aggrave les écarts de température."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Les courants répartissent la chaleur tel le sang.",
+          "La circulation fluide régule mieux que la force."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Dévier un flux marin crée des poches stagnantes",
+          "où la chaleur s'accumule sans pouvoir se diffuser."
+        ]
+      },
+      "notebookLine": "Note 2 : Le pouls repart, mais d'où vient l'eau sale ?"
+    },
+    {
+      "id": "kidneys",
+      "order": 3,
+      "organNameAr": "Les Reins",
+      "organEquivalent": "Les filtres naturels marins",
+      "iconKey": "organ-kidneys",
+      "symptomLines": [
+        "Des polluants s'accumulent dans les fonds.",
+        "Les eaux deviennent troubles et saturées.",
+        "Les reins de l'océan n'arrivent plus à filtrer."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "heart",
+        "warningText": "Symptôme différé : courants lents, toxines piégées."
+      },
+      "choices": [
+        {
+          "id": "slow_safe_filtration",
+          "text": "Suivre une filtration lente et sûre",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "La filtration douce préserve les micro-organismes.",
+            "L'eau redevient limpide sans traumatiser les fonds."
+          ]
+        },
+        {
+          "id": "fast_risky_filtration",
+          "text": "Tenter une filtration rapide risquée",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Le traitement brutal détruit aussi la faune utile.",
+            "En milieu vivant, le remède rapide aggrave l'état."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Un rein sature si on force son rythme d'épuration.",
+          "En écologie, la hâte détruit les alliés fragiles."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Les bactéries et coquillages filtrent par paliers.",
+          "Une purge violente arrache ce qui purifie l'eau."
+        ]
+      },
+      "notebookLine": "Note 3 : Eau pure enfin ! Mais pourquoi le récif cède ?"
+    },
+    {
+      "id": "nervous",
+      "order": 4,
+      "organNameAr": "Le Système nerveux",
+      "organEquivalent": "Les récifs coralliens",
+      "iconKey": "organ-nervous",
+      "symptomLines": [
+        "Le réseau des récifs coralliens s'effondre.",
+        "Des espèces clés disparaissent du lagon.",
+        "Les signaux vitaux du système nerveux s'éteignent."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "kidneys",
+        "warningText": "Symptôme différé : les polluants brûlent les récifs."
+      },
+      "choices": [
+        {
+          "id": "rebuild_reefs",
+          "text": "Reconstruire les récifs marins",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "Les récifs restaurés reconnectent la chaîne marine.",
+            "Chaque espèce locale retrouve son rôle vital."
+          ]
+        },
+        {
+          "id": "introduce_species",
+          "text": "Introduire de nouvelles espèces",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Les espèces introduites bouleversent la chaîne.",
+            "Un écosystème détruit ne se remplace pas ainsi."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Comme les neurones, le récif lie chaque espèce.",
+          "Chaque lien repose sur un équilibre coévolué."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Sans abri récifal natif, les espèces déplacées",
+          "deviennent invasives et aggravent l'effondrement."
+        ]
+      },
+      "notebookLine": "Note 4 : Rien de naturel ici. Que cache la surface ?"
+    },
+    {
+      "id": "immune_skin",
+      "order": 5,
+      "organNameAr": "L'Immunité / La Peau",
+      "organEquivalent": "La barrière de surface",
+      "iconKey": "organ-immune_skin",
+      "symptomLines": [
+        "La surface de la mer perd sa chaleur protectrice.",
+        "Des nappes de déchets humains étouffent la peau.",
+        "La barrière immunitaire de l'océan cède."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "nervous",
+        "warningText": "Symptôme différé : sans récifs, la surface s'épuise."
+      },
+      "choices": [
+        {
+          "id": "remove_waste_root_cause",
+          "text": "Retirer les déchets et traiter la cause",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "Couper l'afflux de déchets protège la peau.",
+            "La cause humaine identifiée, l'immunité renaît."
+          ]
+        },
+        {
+          "id": "temporary_fix_ignore",
+          "text": "Ignorer la source avec un soin passager",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Un soin passager ne bloque pas les rejets humains.",
+            "Sans agir sur la source, la surface replonge."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Calmer la douleur ne referme jamais une plaie.",
+          "L'immunité guérit dès que l'agression cesse."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Les macro-déchets brisent le film thermique marin.",
+          "Tant que les rejets arrivent, la fièvre persiste."
+        ]
+      },
+      "notebookLine": "Note 5 : La plaie vient de terre. Que décidons-nous ?"
+    }
+  ]
+}

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B1220">
+  <title>Ocean MD — Médecin de l'Océan</title>
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/arcade.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/screens.css">
+  <link rel="stylesheet" href="./css/animations.css">
+</head>
+<body>
+  <div id="app" class="arcade-bezel" data-current-screen="title">
+    <header class="arcade-hud" aria-label="Tableau de bord">
+      <div class="hud-stats">
+        <div class="hud-metric">
+          <span class="hud-label">SCORE</span>
+          <span id="hud-score" class="hud-value" data-hud="score">0/50</span>
+        </div>
+        <div class="hud-metric">
+          <span id="hud-heart-icon" class="hud-icon" data-sprite="heart-meter" aria-hidden="true">♥</span>
+          <span class="hud-label">ÉQUILIBRE</span>
+          <span id="hud-balance" class="hud-value" data-hud="balance" data-balance-state="ok">50%</span>
+        </div>
+      </div>
+      <button
+        id="btn-mute"
+        type="button"
+        class="arcade-btn arcade-btn--hud mute-btn"
+        data-action="toggle-mute"
+        aria-pressed="false"
+        aria-label="Couper le son"
+      >
+        <span id="mute-icon" class="mute-icon" data-sprite="sound-on" aria-hidden="true">🔊</span>
+        <span id="mute-label" class="mute-text">SON</span>
+      </button>
+    </header>
+
+    <div id="sfx-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <main id="arcade-screen" class="arcade-screen">
+      <!-- 1. ÉCRAN TITRE (visible par défaut, fond #000000) -->
+      <section id="screen-title" class="screen screen--title" data-screen="title" aria-labelledby="screen-title-heading">
+        <div class="title-scene" data-sprite="title-ocean-scene" aria-hidden="true"></div>
+        <div class="title-marquee">
+          <h1 id="screen-title-heading" class="title-logo">
+            OCEAN MD
+            <span class="title-subtitle">Médecin de l'Océan</span>
+          </h1>
+          <p class="title-tagline line-limit-3">Cinq organes en détresse. Un carnet. Vos choix.</p>
+        </div>
+        <div class="title-actions">
+          <button id="btn-start" type="button" class="arcade-btn arcade-btn--primary arcade-btn--hero" data-action="start">
+            Commencer la plongée
+          </button>
+          <button id="btn-resume" type="button" class="arcade-btn arcade-btn--secondary" data-action="resume" hidden>
+            Reprendre la plongée
+          </button>
+          <button id="btn-new-game" type="button" class="arcade-btn arcade-btn--ghost" data-action="new-game" hidden>
+            Nouvelle partie
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. ÉCRAN D'INTRODUCTION (Carnet du plongeur) -->
+      <section id="screen-intro" class="screen screen--intro" data-screen="intro" aria-labelledby="screen-intro-heading" hidden>
+        <h2 id="screen-intro-heading" class="sr-only">Carnet du plongeur — Introduction</h2>
+        <article class="notebook-card notebook-card--intro">
+          <div class="notebook-header">
+            <span class="notebook-icon" data-sprite="notebook" aria-hidden="true">📖</span>
+            <span class="notebook-title">CARNET DU PLONGEUR</span>
+          </div>
+          <div id="intro-lines" class="notebook-lines line-limit-3">
+            <p class="story-line">L'océan est malade.</p>
+            <p class="story-line">Les symptômes touchent chaque organe.</p>
+            <p class="story-line">Vous êtes le dernier médecin.</p>
+          </div>
+        </article>
+        <div class="screen-actions screen-actions--dual">
+          <button id="btn-open-notebook" type="button" class="arcade-btn arcade-btn--primary" data-action="open-notebook">
+            Ouvrir le carnet
+          </button>
+          <button id="btn-skip-intro" type="button" class="arcade-btn arcade-btn--ghost" data-action="skip-intro">
+            Passer
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. ÉCRAN CARTE / HUB (Corps humain pixelisé + 5 organes) -->
+      <section id="screen-hub" class="screen screen--hub" data-screen="hub" aria-labelledby="screen-hub-heading" hidden>
+        <header class="screen-header">
+          <h2 id="screen-hub-heading" class="screen-title">Carte des Organes</h2>
+          <p id="hub-status" class="screen-subtitle line-limit-2">Organe actif prêt pour le diagnostic.</p>
+        </header>
+
+        <div id="hub-map" class="body-map">
+          <div id="hub-body-silhouette" class="body-map__silhouette" data-sprite="human-body-map" aria-hidden="true"></div>
+          <ol id="hub-organ-nodes" class="body-map__nodes" aria-label="Les cinq organes de l'océan">
+            <li>
+              <button type="button" class="organ-node" data-stage-id="lungs" data-order="1" data-state="active" style="--node-x: 37.5%; --node-y: 31.25%;" aria-label="1. Les Poumons">
+                <span class="organ-node__sprite" data-sprite="organ-lungs" aria-hidden="true"></span>
+                <span class="organ-node__label">1</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="organ-node" data-stage-id="heart" data-order="2" data-state="locked" style="--node-x: 62.5%; --node-y: 37.5%;" aria-label="2. Le Cœur" disabled>
+                <span class="organ-node__sprite" data-sprite="organ-heart" aria-hidden="true"></span>
+                <span class="organ-node__label">2</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="organ-node" data-stage-id="kidneys" data-order="3" data-state="locked" style="--node-x: 37.5%; --node-y: 56.25%;" aria-label="3. Les Reins" disabled>
+                <span class="organ-node__sprite" data-sprite="organ-kidneys" aria-hidden="true"></span>
+                <span class="organ-node__label">3</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="organ-node" data-stage-id="nervous" data-order="4" data-state="locked" style="--node-x: 50%; --node-y: 12.5%;" aria-label="4. Le Système nerveux" disabled>
+                <span class="organ-node__sprite" data-sprite="organ-nervous" aria-hidden="true"></span>
+                <span class="organ-node__label">4</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="organ-node" data-stage-id="immune_skin" data-order="5" data-state="locked" style="--node-x: 75%; --node-y: 56.25%;" aria-label="5. L'Immunité / La Peau" disabled>
+                <span class="organ-node__sprite" data-sprite="organ-immune_skin" aria-hidden="true"></span>
+                <span class="organ-node__label">5</span>
+              </button>
+            </li>
+          </ol>
+        </div>
+
+        <div class="screen-actions">
+          <button id="btn-next-stage" type="button" class="arcade-btn arcade-btn--primary arcade-btn--full" data-action="next-stage">
+            Niveau suivant
+          </button>
+        </div>
+      </section>
+
+      <!-- 4. ÉCRAN DE NIVEAU (Symptôme, indices, choix A/B égaux) -->
+      <section id="screen-stage" class="screen screen--stage" data-screen="stage" aria-labelledby="stage-organ-name" hidden>
+        <header class="stage-header">
+          <div class="stage-identity">
+            <span id="stage-organ-icon" class="stage-organ-icon" data-sprite="organ-lungs" aria-hidden="true"></span>
+            <div class="stage-titles">
+              <span id="stage-progress" class="stage-progress">ORGANE 1 / 5</span>
+              <h2 id="stage-organ-name" class="screen-title">Les Poumons</h2>
+              <p id="stage-organ-eq" class="stage-organ-eq">Le phytoplancton de surface</p>
+            </div>
+          </div>
+
+          <div id="stage-delayed-banner" class="alert-banner alert-banner--delayed" role="status" hidden>
+            <span id="stage-delayed-text" class="line-limit-2"></span>
+          </div>
+
+          <div id="stage-symptom" class="symptom-box line-limit-3"></div>
+        </header>
+
+        <div class="stage-hints">
+          <div class="hints-controls">
+            <button id="btn-free-hint" type="button" class="arcade-btn arcade-btn--hint" data-action="free-hint">
+              📖 Indice (Gratuit)
+            </button>
+            <button
+              id="btn-extra-hint"
+              type="button"
+              class="arcade-btn arcade-btn--hint arcade-btn--extra"
+              data-action="extra-hint"
+              aria-describedby="extra-hint-lock-msg"
+              disabled
+            >
+              <span class="hint-btn-title">💡 Indice + (-20 pts)</span>
+              <span id="extra-hint-lock-msg" class="hint-lock-reason">Accumulez d'abord des points</span>
+            </button>
+          </div>
+
+          <aside id="stage-hint-box" class="notebook-card notebook-card--hint" aria-live="polite" hidden>
+            <div class="notebook-header">
+              <span class="notebook-icon" data-sprite="notebook" aria-hidden="true">📖</span>
+              <span class="notebook-title">CARNET DE SAVOIR</span>
+            </div>
+            <div id="stage-hint-lines" class="notebook-lines line-limit-2"></div>
+          </aside>
+        </div>
+
+        <div id="stage-choices" class="choices-grid" role="group" aria-label="Choix de traitement">
+          <button id="choice-btn-a" type="button" class="arcade-btn arcade-btn--choice" data-choice-slot="0" data-key-shortcut="A">
+            <span class="choice-key" aria-hidden="true">[A]</span>
+            <span id="choice-text-a" class="choice-text line-limit-3"></span>
+          </button>
+          <button id="choice-btn-b" type="button" class="arcade-btn arcade-btn--choice" data-choice-slot="1" data-key-shortcut="B">
+            <span class="choice-key" aria-hidden="true">[B]</span>
+            <span id="choice-text-b" class="choice-text line-limit-3"></span>
+          </button>
+        </div>
+
+        <footer class="stage-footer">
+          <button id="btn-back-hub" type="button" class="arcade-btn arcade-btn--ghost" data-action="back-hub">
+            ← Carte
+          </button>
+          <div id="stage-footer-status" class="stage-footer__status">
+            <span>SCORE : <strong data-hud-mirror="score">0/50</strong></span>
+            <span>ÉQUILIBRE : <strong data-hud-mirror="balance">50%</strong></span>
+          </div>
+        </footer>
+      </section>
+
+      <!-- 5. ÉCRAN DE RÉSULTAT (Retour causal, score/équilibre, ligne du carnet) -->
+      <section id="screen-result" class="screen screen--result" data-screen="result" aria-labelledby="result-heading" hidden>
+        <div id="result-status-badge" class="result-banner" data-outcome="success">
+          <h2 id="result-heading" class="screen-title">Diagnostic enregistré</h2>
+        </div>
+
+        <div id="result-feedback" class="feedback-box line-limit-2"></div>
+
+        <div id="result-delta-strip" class="result-deltas">
+          <span id="result-score-delta" class="delta-chip">+10 PTS</span>
+          <span id="result-balance-delta" class="delta-chip">ÉQUILIBRE +10%</span>
+        </div>
+
+        <article class="notebook-card notebook-card--note">
+          <div class="notebook-header">
+            <span class="notebook-icon" data-sprite="notebook" aria-hidden="true">📖</span>
+            <span class="notebook-title">NOTE DU PLONGEUR</span>
+          </div>
+          <p id="result-notebook-line" class="notebook-line line-limit-2"></p>
+        </article>
+
+        <div class="screen-actions screen-actions--dual">
+          <button id="btn-replay-stage" type="button" class="arcade-btn arcade-btn--ghost" data-action="replay-stage">
+            Rejouer le niveau
+          </button>
+          <button id="btn-result-next" type="button" class="arcade-btn arcade-btn--primary" data-action="result-next">
+            Suivant
+          </button>
+        </div>
+      </section>
+
+      <!-- 6. ÉCRAN DE FIN (Transition gris->bleu, révélation IUTLCO, engagement, badge, partage) -->
+      <section id="screen-ending" class="screen screen--ending" data-screen="ending" aria-labelledby="ending-heading" hidden>
+        <div id="ending-ocean-backdrop" class="ending-ocean" data-recovered="false" aria-hidden="true">
+          <div class="ending-scene" data-sprite="ending-reef-scene" aria-hidden="true"></div>
+        </div>
+
+        <div class="ending-content">
+          <h2 id="ending-heading" class="screen-title">Diagnostic Final</h2>
+
+          <div id="ending-reveal-lines" class="reveal-box line-limit-3"></div>
+
+          <div id="ending-pledge-block" class="pledge-block">
+            <p id="ending-pledge-question" class="pledge-question line-limit-2">Vous engagez-vous à le préserver ?</p>
+            <div class="choices-grid choices-grid--pledge" role="group" aria-label="Engagement final">
+              <button id="btn-pledge-yes" type="button" class="arcade-btn arcade-btn--pledge" data-pledge="yes">
+                Oui
+              </button>
+              <button id="btn-pledge-later" type="button" class="arcade-btn arcade-btn--pledge" data-pledge="later">
+                Plus tard
+              </button>
+            </div>
+          </div>
+
+          <article id="ending-summary" class="summary-card" hidden>
+            <div class="badge-showcase">
+              <span id="ending-badge-icon" class="badge-sprite" data-sprite="badge-beginner" aria-hidden="true"></span>
+              <h3 id="ending-badge-title" class="badge-title">Médecin débutant</h3>
+            </div>
+            <div class="summary-metrics">
+              <p>Score final : <strong id="ending-final-score">0/50</strong></p>
+              <p>Équilibre océan : <strong id="ending-final-balance">50%</strong></p>
+            </div>
+            <p id="ending-autonomy" class="autonomy-line line-limit-2">Indices utilisés : gratuit 0 / supplémentaire 0</p>
+
+            <div id="ending-share-fallback" class="share-fallback" hidden>
+              <label for="share-fallback-input" class="sr-only">Texte de résultat à copier</label>
+              <input id="share-fallback-input" type="text" class="share-input" readonly>
+            </div>
+            <p id="share-feedback-toast" class="share-toast" role="status" hidden>Résultat copié !</p>
+
+            <div class="screen-actions screen-actions--dual">
+              <button id="btn-share-result" type="button" class="arcade-btn arcade-btn--secondary" data-action="share">
+                Partager votre résultat
+              </button>
+              <button id="btn-play-again" type="button" class="arcade-btn arcade-btn--primary" data-action="play-again">
+                Rejouer
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script id="stages-fallback" type="application/json">
+{
+  "version": 1,
+  "story": {
+    "introLines": [
+      "L'océan est malade.",
+      "Les symptômes touchent chaque organe.",
+      "Vous êtes le dernier médecin."
+    ],
+    "endingRevealLines": [
+      "L'océan est un corps vivant, pas un réservoir.",
+      "Chaque mal soigné est né d'un choix humain.",
+      "Sa guérison commence aussi par un choix humain."
+    ],
+    "pledgeQuestion": "Vous engagez-vous à le préserver ?"
+  },
+  "stages": [
+    {
+      "id": "lungs",
+      "order": 1,
+      "organNameAr": "Les Poumons",
+      "organEquivalent": "Le phytoplancton de surface",
+      "iconKey": "organ-lungs",
+      "symptomLines": [
+        "Le phytoplancton manque d'air en surface.",
+        "Un voile d'algues trouble les eaux claires.",
+        "Le taux d'oxygène marin chute vite."
+      ],
+      "delayedSymptom": null,
+      "choices": [
+        {
+          "id": "clean_surface",
+          "text": "Nettoyer la surface de l'eau",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "La surface nettoyée laisse passer la lumière.",
+            "Le phytoplancton respire et produit l'oxygène."
+          ]
+        },
+        {
+          "id": "leave_algae",
+          "text": "Laisser les algues s'étendre",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Le voile d'algues bloque encore la lumière.",
+            "Sans rayons solaires, le plancton asphyxie."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Le phytoplancton crée l'oxygène grâce au soleil.",
+          "Tout écran en surface bloque la lumière vitale."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Comme nos poumons, la mer respire via sa surface.",
+          "L'excès d'algues prive les micro-plantes de soleil."
+        ]
+      },
+      "notebookLine": "Note 1 : L'oxygène revient. Pourquoi ce pouls faible ?"
+    },
+    {
+      "id": "heart",
+      "order": 2,
+      "organNameAr": "Le Cœur",
+      "organEquivalent": "Les courants océaniques",
+      "iconKey": "organ-heart",
+      "symptomLines": [
+        "Le pouls des courants marins s'affaiblit.",
+        "La chaleur ne circule plus entre les eaux.",
+        "Des zones glacent pendant que d'autres brûlent."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "lungs",
+        "warningText": "Symptôme différé : manque d'oxygène, cœur ralenti."
+      },
+      "choices": [
+        {
+          "id": "natural_current",
+          "text": "Rétablir le cours naturel du courant",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "Le courant libéré répartit la chaleur marine.",
+            "L'équilibre naturel stabilise le cœur océanique."
+          ]
+        },
+        {
+          "id": "artificial_barrier",
+          "text": "Construire une barrière artificielle",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Le mur rigide dévie le flux et bloque le cycle.",
+            "Forcer l'eau aggrave les écarts de température."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Les courants répartissent la chaleur tel le sang.",
+          "La circulation fluide régule mieux que la force."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Dévier un flux marin crée des poches stagnantes",
+          "où la chaleur s'accumule sans pouvoir se diffuser."
+        ]
+      },
+      "notebookLine": "Note 2 : Le pouls repart, mais d'où vient l'eau sale ?"
+    },
+    {
+      "id": "kidneys",
+      "order": 3,
+      "organNameAr": "Les Reins",
+      "organEquivalent": "Les filtres naturels marins",
+      "iconKey": "organ-kidneys",
+      "symptomLines": [
+        "Des polluants s'accumulent dans les fonds.",
+        "Les eaux deviennent troubles et saturées.",
+        "Les reins de l'océan n'arrivent plus à filtrer."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "heart",
+        "warningText": "Symptôme différé : courants lents, toxines piégées."
+      },
+      "choices": [
+        {
+          "id": "slow_safe_filtration",
+          "text": "Suivre une filtration lente et sûre",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "La filtration douce préserve les micro-organismes.",
+            "L'eau redevient limpide sans traumatiser les fonds."
+          ]
+        },
+        {
+          "id": "fast_risky_filtration",
+          "text": "Tenter une filtration rapide risquée",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Le traitement brutal détruit aussi la faune utile.",
+            "En milieu vivant, le remède rapide aggrave l'état."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Un rein sature si on force son rythme d'épuration.",
+          "En écologie, la hâte détruit les alliés fragiles."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Les bactéries et coquillages filtrent par paliers.",
+          "Une purge violente arrache ce qui purifie l'eau."
+        ]
+      },
+      "notebookLine": "Note 3 : Eau pure enfin ! Mais pourquoi le récif cède ?"
+    },
+    {
+      "id": "nervous",
+      "order": 4,
+      "organNameAr": "Le Système nerveux",
+      "organEquivalent": "Les récifs coralliens",
+      "iconKey": "organ-nervous",
+      "symptomLines": [
+        "Le réseau des récifs coralliens s'effondre.",
+        "Des espèces clés disparaissent du lagon.",
+        "Les signaux vitaux du système nerveux s'éteignent."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "kidneys",
+        "warningText": "Symptôme différé : les polluants brûlent les récifs."
+      },
+      "choices": [
+        {
+          "id": "rebuild_reefs",
+          "text": "Reconstruire les récifs marins",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "Les récifs restaurés reconnectent la chaîne marine.",
+            "Chaque espèce locale retrouve son rôle vital."
+          ]
+        },
+        {
+          "id": "introduce_species",
+          "text": "Introduire de nouvelles espèces",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Les espèces introduites bouleversent la chaîne.",
+            "Un écosystème détruit ne se remplace pas ainsi."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Comme les neurones, le récif lie chaque espèce.",
+          "Chaque lien repose sur un équilibre coévolué."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Sans abri récifal natif, les espèces déplacées",
+          "deviennent invasives et aggravent l'effondrement."
+        ]
+      },
+      "notebookLine": "Note 4 : Rien de naturel ici. Que cache la surface ?"
+    },
+    {
+      "id": "immune_skin",
+      "order": 5,
+      "organNameAr": "L'Immunité / La Peau",
+      "organEquivalent": "La barrière de surface",
+      "iconKey": "organ-immune_skin",
+      "symptomLines": [
+        "La surface de la mer perd sa chaleur protectrice.",
+        "Des nappes de déchets humains étouffent la peau.",
+        "La barrière immunitaire de l'océan cède."
+      ],
+      "delayedSymptom": {
+        "dependsOnStageId": "nervous",
+        "warningText": "Symptôme différé : sans récifs, la surface s'épuise."
+      },
+      "choices": [
+        {
+          "id": "remove_waste_root_cause",
+          "text": "Retirer les déchets et traiter la cause",
+          "isCorrect": true,
+          "balanceDelta": 10,
+          "feedbackLines": [
+            "Couper l'afflux de déchets protège la peau.",
+            "La cause humaine identifiée, l'immunité renaît."
+          ]
+        },
+        {
+          "id": "temporary_fix_ignore",
+          "text": "Ignorer la source avec un soin passager",
+          "isCorrect": false,
+          "balanceDelta": -10,
+          "feedbackLines": [
+            "Un soin passager ne bloque pas les rejets humains.",
+            "Sans agir sur la source, la surface replonge."
+          ]
+        }
+      ],
+      "freeHint": {
+        "lines": [
+          "Calmer la douleur ne referme jamais une plaie.",
+          "L'immunité guérit dès que l'agression cesse."
+        ]
+      },
+      "extraHint": {
+        "lines": [
+          "Les macro-déchets brisent le film thermique marin.",
+          "Tant que les rejets arrivent, la fièvre persiste."
+        ]
+      },
+      "notebookLine": "Note 5 : La plaie vient de terre. Que décidons-nous ?"
+    }
+  ]
+}
+  </script>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
